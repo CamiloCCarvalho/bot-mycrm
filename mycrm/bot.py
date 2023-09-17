@@ -1,59 +1,50 @@
+from botcity.core import DesktopBot, Backend
+
 """
-WARNING:
+backend=Backend.UIA
+backend=Backend.WIN32
 
-Please make sure you install the bot with `pip install -e .` in order to get all the dependencies
-on your Python environment.
+ POR QUE E COMO ESCOLHER CADA UMA DAS DUAS FORMAS DE CONEXÃO
+ > https://pywinauto.readthedocs.io/en/latest/getting_started.html
 
-Also, if you are using PyCharm or another IDE, make sure that you use the SAME Python interpreter
-as your IDE.
+ UTILIZA PYWINAUTO NOS BASTIDORES
+ > https://pywinauto.readthedocs.io/en/latest/code/pywinauto.keyboard.html
 
-If you get an error like:
-```
-ModuleNotFoundError: No module named 'botcity'
-```
-
-This means that you are likely using a different Python interpreter than the one used to install the bot.
-To fix this, you can either:
-- Use the same interpreter as your IDE and install your bot with `pip install --upgrade -r requirements.txt`
-- Use the same interpreter as the one used to install the bot (`pip install --upgrade -r requirements.txt`)
-
-Please refer to the documentation for more information at https://documentation.botcity.dev/
 """
 
-# Import for the Desktop Bot
-from botcity.core import DesktopBot
-
-# Import for integration with BotCity Maestro SDK
-from botcity.maestro import *
-
-# Disable errors if we are not connected to Maestro
-BotMaestroSDK.RAISE_NOT_CONNECTED = False
 
 def main():
-    # Runner passes the server url, the id of the task being executed,
-    # the access token and the parameters that this task receives (when applicable).
-    maestro = BotMaestroSDK.from_sys_args()
-    ## Fetch the BotExecution with details from the task, including parameters
-    execution = maestro.get_execution()
-
-    print(f"Task ID is: {execution.task_id}")
-    print(f"Task Parameters are: {execution.parameters}")
 
     bot = DesktopBot()
-    bot.browse("http://www.botcity.dev")
+    path_app =  fr'C:\Program Files\MyCRM.exe'
+    bot.execute(path_app)
+    bot.wait(2000)
 
-    # Implement here your logic...
-    ...
 
-    # Uncomment to mark this task as finished on BotMaestro
-    # maestro.finish_task(
-    #     task_id=execution.task_id,
-    #     status=AutomationTaskFinishStatus.SUCCESS,
-    #     message="Task Finished OK."
-    # )
+    #                (forma de acesso, caminho de conexão)
+    bot.connect_to_app(backend=Backend.UIA, path=path_app)
 
-def not_found(label):
-    print(f"Element not found: {label}")
+    # ValuePattern.Value	My CRM (Sample App)
+    main_window = bot.find_app_window(title="My CRM (Sample App)")
+    main_window.menu_select('File -> Clear Fields')
+
+    # é do pywinauto
+    main_window.type_keys('%{t} Camilo')
+    main_window.Edit.type_keys('Costa')
+    main_window.Edit10.type_keys('Fortaleza')
+    main_window.Male.click()
+    main_window.Company.select()
+    main_window.People.select()
+    main_window.menu_select('File -> Open')
+
+    #ValuePattern.Value	Customer Lookup
+    main_window.CostumerLookup.print_control_identifiers()
+    main_window.CostumerLookup.Edit2.type_keys('Camilo')
+    main_window.CostumerLookup.Edite3.type_keys('Costa')
+    main_window.CostumerLookup.OK.click()
+
+    # END
+
 
 
 if __name__ == '__main__':

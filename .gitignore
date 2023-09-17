@@ -1,0 +1,5 @@
+mycrm_venv
+mycrm/resources
+mycrm/build.*
+mycrm/*.botproj
+mycrm/*.zip
